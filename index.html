@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Processing Application</title>
+</head>
+
+<body>
+  <h1>Data Processing Application</h1>
+
+  <button onclick="performProcessingWithoutWorkers()">Process Without Workers</button>
+  <button onclick="performProcessingWithWorkers()">Process With Workers</button>
+  <button onclick="checkUIthread()">Check Main Thread Responding</button>
+  <div id="output"></div>
+
+  <script>
+    const arraySize = 10000000; // Size of the array for processing
+
+    // Function to generate a random array
+    function generateRandomArray(size) {
+      const array = new Array(size);
+      for (let i = 0; i < size; i++) {
+        array[i] = Math.random();
+      }
+      return array;
+    }
+
+    // Function to perform sorting without Web Workers
+    function performProcessingWithoutWorkers() {
+      const startTime = new Date().getTime();
+
+      const array = generateRandomArray(arraySize);
+      array.sort();
+
+      const endTime = new Date().getTime();
+      const duration = endTime - startTime;
+
+      displayResult(`Processing without Web Workers took ${duration} milliseconds.`);
+    }
+
+    // Function to perform sorting with Web Workers
+    function performProcessingWithWorkers() {
+      const startTime = new Date().getTime();
+
+      const worker = new Worker('worker.js');
+
+      worker.onmessage = function (event) {
+        const endTime = new Date().getTime();
+        const duration = endTime - startTime;
+
+        displayResult(`Processing with Web Workers took ${duration} milliseconds.`);
+      };
+
+      worker.postMessage({ arraySize });
+    }
+
+    // Function to display the result
+    function displayResult(result) {
+      document.getElementById('output').innerText = result;
+    }
+
+    function checkUIthread() {
+      alert("Working!")
+    }
+  </script>
+
+</body>
+
+</html>
